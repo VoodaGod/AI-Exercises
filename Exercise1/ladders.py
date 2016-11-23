@@ -4,8 +4,6 @@ import string
 sortedSet = set()
 wordDict = {}
 ladder = []
-startWord = ""
-endWord = ""
 
 def isVectorValid(vector):
 	return isWordValid(createWordFromVector(vector))
@@ -23,14 +21,14 @@ def getValidWords(sortedWord):
 
 def getArgs():
 	#sets startWord & endWord to cmd args
-	global startWord; global endWord
 	if len(sys.argv) > 2:
 		startWord = sys.argv[1]
 		endWord = sys.argv[2]
 	else:
-		print("needs 2 arguments: \"<startWord> <endWord>\"")
-		startWord = "lamp"
-		endWord = "camping"
+		print("takes 2 arguments: \"<startWord> <endWord>\"")
+		startWord = "campos"
+		endWord = "campus"
+	return (startWord, endWord)
 
 def loadWordList():
 	#loads words from wordList.txt in root,
@@ -63,17 +61,73 @@ def createWordFromVector(vector):
 	return "".join(sortedWord)
 
 def getVectorDifference(vector1, vector2):
+	#returns the diffVector vector1-vector2
 	diff = []
 	for i in range(len(vector1)):
 		diff.append(vector1[i] - vector2[i])
 	return diff
 
+
+def climbLadderSmart(currentVector, endVector):
+	#climb ladder by trying to minimize the length of the distance vector
+	if not isVectorValid(currentVector):
+		return False
+	if currentVector == endVector:
+		return True
+
+	diffVector = getVectorDifference(currentVector, endVector)
+	for i in range(len(currentVector)):
+		charCount = diffVector[i]
+		newVector = list(currentVector)
+		if charCount > 0:
+			newVector[i] -= 1
+		elif charCount < 0:
+			newVector[i] += 1
+		elif charCount == 0:
+			continue
+
+		if climbLadderSmart(newVector, endVector):
+			ladder.append(newVector)
+			return True
+		else:
+			return False
+
+
+def ladderToWords(startWord, endWord):
+	#converts ladder of vectors to words
+	#replaces start and end with correct words
+	wordLadder = []
+	for vector in ladder:
+		words = getValidWords(createWordFromVector(vector))
+		wordLadder.append(words[0])
+	wordLadder.insert(0, startWord)
+	wordLadder.pop()
+	wordLadder.append(endWord)
+	return wordLadder
+
+
+
 def main():
-	getArgs()
 	loadWordList()
-	print("startWord = " + startWord + ", endWord = " + endWord)
+	startEnd = getArgs()
+	startWord = startEnd[0]
+	endWord = startEnd[1]
+
+	if isWordValid(sortWord(startWord)) and isWordValid(sortWord(endWord)):
+		print("startWord = " + startWord + ", endWord = " + endWord)
+	else:
+		print("invalid word(s)!")
+		return
+
 	startWordVector = createVectorFromWord(startWord)
 	endWordVector = createVectorFromWord(endWord)
+
+	if climbLadderSmart(startWordVector, endWordVector):
+		ladder.reverse()
+		print("ladder found!")
+		print(str(ladderToWords(startWord, endWord)))
+	else:
+		print("no ladder found :(")
 
 
 main()
