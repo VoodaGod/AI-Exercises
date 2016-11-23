@@ -6,7 +6,7 @@ wordDict = {}
 ladder = []
 
 def isVectorValid(vector):
-	return isWordValid(createWordFromVector(vector))
+	return isWordValid(getWordFromVector(vector))
 
 def isWordValid(sortedWord):
 	#returns wether sortedWord is a valid combination
@@ -37,22 +37,22 @@ def loadWordList():
 	file = open("wordList.txt")
 	for line in file:
 		word = line.rstrip()
-		wordSorted = sortWord(word)
+		wordSorted = getSortedWord(word)
 		sortedSet.add(wordSorted)
 		wordDict.setdefault(wordSorted, []).append(word)
 	file.close()
 
-def sortWord(word):
+def getSortedWord(word):
 	return "".join(sorted(word))
 
-def createVectorFromWord(word):
+def getVectorFromWord(word):
 	#returns a vector containing counts of chars in string
 	vector = []
 	for char in string.ascii_lowercase:
 		vector.append(word.count(char))
 	return vector
 
-def createWordFromVector(vector):
+def getWordFromVector(vector):
 	#returns a sorted word from a vector
 	sortedWord = []
 	for char in range(len(vector)):
@@ -90,15 +90,19 @@ def climbLadderSmart(currentVector, endVector):
 			ladder.append(newVector)
 			return True
 		else:
-			return False
+			continue
+	return False
 
 
-def ladderToWords(startWord, endWord):
+#TODO def climbLadderDumb():
+
+
+def getWordLadder(startWord, endWord):
 	#converts ladder of vectors to words
 	#replaces start and end with correct words
 	wordLadder = []
 	for vector in ladder:
-		words = getValidWords(createWordFromVector(vector))
+		words = getValidWords(getWordFromVector(vector))
 		wordLadder.append(words[0])
 	wordLadder.insert(0, startWord)
 	wordLadder.pop()
@@ -113,21 +117,41 @@ def main():
 	startWord = startEnd[0]
 	endWord = startEnd[1]
 
-	if isWordValid(sortWord(startWord)) and isWordValid(sortWord(endWord)):
+	if isWordValid(getSortedWord(startWord)) and isWordValid(getSortedWord(endWord)):
 		print("startWord = " + startWord + ", endWord = " + endWord)
 	else:
 		print("invalid word(s)!")
 		return
 
-	startWordVector = createVectorFromWord(startWord)
-	endWordVector = createVectorFromWord(endWord)
+	startWordVector = getVectorFromWord(startWord)
+	endWordVector = getVectorFromWord(endWord)
 
 	if climbLadderSmart(startWordVector, endWordVector):
 		ladder.reverse()
 		print("ladder found!")
-		print(str(ladderToWords(startWord, endWord)))
+		print(str(getWordLadder(startWord, endWord)))
 	else:
 		print("no ladder found :(")
+	ladder.clear()
 
 
 main()
+
+
+def getAllLadders():
+	loadWordList()
+	file = open("wordList.txt")
+	for line in file:
+		for line2 in file:
+			startWord = line.rstrip()
+			endWord = line2.rstrip()
+			startWordVector = getVectorFromWord(startWord)
+			endWordVector = getVectorFromWord(endWord)
+			if climbLadderSmart(startWordVector, endWordVector):
+				ladder.reverse()
+				print("ladder found!")
+				print(str(getWordLadder(startWord, endWord)))
+				ladder.clear()
+	file.close()
+
+#getAllLadders()
