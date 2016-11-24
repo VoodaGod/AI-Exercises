@@ -34,12 +34,14 @@ def loadWordList():
 	#loads words from wordList.txt in root,
 	#adds a wordVector to sortedSet
 	#adds original word to wordDict{wordVector: [word1, word2]}
+	print("loading words from wordList.txt")
 	file = open("wordList.txt")
 	for line in file:
 		word = line.rstrip()
 		wordSorted = getSortedWord(word)
 		sortedSet.add(wordSorted)
 		wordDict.setdefault(wordSorted, []).append(word)
+	print("done")
 	file.close()
 
 def getSortedWord(word):
@@ -131,22 +133,27 @@ def doLadder(startWord, endWord):
 
 def main():
 	loadWordList()
+	print("")
 
-	startEnd = getArgs()
-	startWord = startEnd[0]; endWord = startEnd[1]
+	#startEnd = getArgs()
+	#startWord = startEnd[0]; endWord = startEnd[1]
 	#doLadder(startWord, endWord)
 
 	startWord = "croissant"; endWord = "baritone"
 	doLadder(startWord, endWord)
+	print("")
 
 	startWord = "crumpet"; endWord = "treacle"
 	doLadder(startWord, endWord)
+	print("")
 
 	startWord = "apple"; endWord = "pear"
 	doLadder(startWord, endWord)
+	print("")
 
 	startWord = "lead"; endWord = "gold"
 	doLadder(startWord, endWord)
+	print("")
 
 
 main()
