@@ -125,7 +125,7 @@ def depthLimitedSearch(currentVector, endVector, limit):
 	exploredSet.add(getWordFromVector(currentVector))
 
 	if climbLadderSmart(currentVector, endVector):
-		print("did rest with climbLadderSmart")
+		print("finished with climbLadderSmart")
 		return True
 
 	for char in range(len(currentVector)):

@@ -1,5 +1,10 @@
-pug
-gulp
-lug
-glum
-gum
+toilet
+title
+litten
+inlet
+lent
+net
+then
+hen
+hone
+phone
