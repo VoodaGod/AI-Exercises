@@ -27,8 +27,8 @@ def getArgs():
 		endWord = sys.argv[2]
 	else:
 		print("takes 2 arguments: \"<startWord> <endWord>\"")
-		startWord = "pug"
-		endWord = "gum"
+		startWord = ""
+		endWord = ""
 	return (startWord, endWord)
 
 def loadWordList():
@@ -71,6 +71,7 @@ def getVectorDifference(vector1, vector2):
 	return diff
 
 def getVectorLength(vector):
+	#returns sum of absolute Values in vector
 	length = 0
 	for charCount in vector:
 		length += abs(charCount)
@@ -79,28 +80,27 @@ def getVectorLength(vector):
 
 def climbLadderSmart(currentVector, endVector):
 	#climb ladder by only shortening distance vector
-	if not isVectorValid(currentVector):
-		return False
 	if currentVector == endVector:
 		ladder.append(currentVector)
 		return True
 
 	diffVector = getVectorDifference(currentVector, endVector)
-	for i in range(len(currentVector)):
-		charCount = diffVector[i]
+	for char in range(len(currentVector)):
+		charCount = diffVector[char]
 		newVector = list(currentVector)
 		if charCount > 0:
-			newVector[i] -= 1
+			newVector[char] -= 1
 		elif charCount < 0:
-			newVector[i] += 1
+			newVector[char] += 1
 		elif charCount == 0:
 			continue
 
-		if climbLadderSmart(newVector, endVector):
-			ladder.append(currentVector)
-			return True
-		else:
-			continue
+		if isVectorValid(newVector):
+			if climbLadderSmart(newVector, endVector):
+				ladder.append(currentVector)
+				return True
+			else:
+				continue
 	return False
 
 
@@ -108,6 +108,7 @@ def iterativeDeepeningSearch(startVector, endVector, startDepth):
 	depth = startDepth
 	while depth < len(sortedSet):
 		print("searching to depth " + str(depth))
+		exploredSet.clear()
 		if depthLimitedSearch(startVector, endVector, depth):
 			return True
 		else:
@@ -116,46 +117,33 @@ def iterativeDeepeningSearch(startVector, endVector, startDepth):
 
 
 def depthLimitedSearch(currentVector, endVector, limit):
-	if not isVectorValid(currentVector):
-		return False
 	if currentVector == endVector:
 		ladder.append(currentVector)
 		return True
-	elif limit == 0:
+	if limit == 0:
 		return False
+	exploredSet.add(getWordFromVector(currentVector))
 
 	if climbLadderSmart(currentVector, endVector):
+		print("did rest with climbLadderSmart")
 		return True
 
-	child = getChild(currentVector, endVector)
-	if child is not None:
-		exploredSet.add(getWordFromVector(child))
-		if depthLimitedSearch(child, endVector, limit - 1):
-			ladder.append(currentVector)
-			return True
-	else:
-		return False
+	for char in range(len(currentVector)):
+		child = list(currentVector)
+		#add char
+		child[char] = currentVector[char] + 1
+		if getWordFromVector(child) not in exploredSet and isVectorValid(child):
+			if depthLimitedSearch(child, endVector, limit - 1):
+				ladder.append(currentVector)
+				return True
+		#remove char
+		child[char] = currentVector[char] - 1
+		if getWordFromVector(child) not in exploredSet and isVectorValid(child):
+			if depthLimitedSearch(child, endVector, limit - 1):
+				ladder.append(currentVector)
+				return True
 
-
-def getChild(parentVector, endVector):
-	diffLength = getVectorLength(endVector) - getVectorLength(parentVector)
-	for char in range(len(parentVector)):
-		child = list(parentVector)
-		if diffLength >= 0:
-			child[char] = parentVector[char] + 1
-		else:
-			child[char] = parentVector[char] - 1
-		if isVectorValid(child) and getWordFromVector(child) not in exploredSet:
-			return child
-		else:
-			child = list(parentVector)
-			if diffLength >= 0:
-				child[char] = parentVector[char] - 1
-			else:
-				child[char] = parentVector[char] + 1
-			if isVectorValid(child) and getWordFromVector(child) not in exploredSet:
-				return child
-	#return None
+	return False
 
 
 def getWordLadder(startWord, endWord):
@@ -195,14 +183,20 @@ def main():
 	loadWordList()
 	print("")
 
-	#'''
-	startWord = startEnd[0]; endWord = startEnd[1]
+	startWord = startEnd[0]
+	endWord = startEnd[1]
+	wordLadder = []
 	if doLadder(startWord, endWord):
-		print(str(getWordLadder(startWord, endWord)))
+		wordLadder = getWordLadder(startWord, endWord)
+		print(str(wordLadder))
 		ladder.clear()
+	file = open("output.txt", "w")
+	for word in wordLadder:
+		file.write(word + "\n")
+	file.close()
 	print("")
-	#'''
 
+	'''
 	startWord = "croissant"; endWord = "baritone"
 	if doLadder(startWord, endWord):
 		print(str(getWordLadder(startWord, endWord)))
@@ -226,6 +220,6 @@ def main():
 		print(str(getWordLadder(startWord, endWord)))
 		ladder.clear()
 	print("")
-
+	'''
 
 main()
