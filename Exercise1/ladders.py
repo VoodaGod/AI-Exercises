@@ -169,6 +169,7 @@ def doLadder(startWord, endWord):
 	endVector = getVectorFromWord(endWord)
 	ladderFound = True
 	if not climbLadderSmart(startVector, endVector):
+		#ladder must be longer than direct distanceVector
 		minLadderLength = getVectorLength(getVectorDifference(startVector, endVector))
 		if not iterativeDeepeningSearch(startVector, endVector, minLadderLength):
 			print("no ladder found :(")
