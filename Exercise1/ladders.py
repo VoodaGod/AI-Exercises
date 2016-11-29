@@ -106,7 +106,7 @@ def climbLadderSmart(currentVector, endVector):
 
 def iterativeDeepeningSearch(startVector, endVector, startDepth):
 	depth = startDepth
-	numExploredNodesPrev = len(exploredSet)
+	numExploredNodesPrev = 0
 	moreNodesExplored = True
 	while moreNodesExplored: #make sure more nodes have been explored than last iteration
 		print("searching to depth " + str(depth))
@@ -135,7 +135,7 @@ def depthLimitedSearch(currentVector, endVector, limit):
 	for char in range(len(currentVector)):
 		child = list(currentVector)
 		diffLength = getVectorLength(getVectorDifference(currentVector, endVector))
-		#try to get to words with similar length first
+		#try to check words with similar length first
 		if diffLength <= 0:
 			#add char
 			child[char] = currentVector[char] + 1
