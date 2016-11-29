@@ -130,18 +130,33 @@ def depthLimitedSearch(currentVector, endVector, limit):
 
 	for char in range(len(currentVector)):
 		child = list(currentVector)
-		#add char
-		child[char] = currentVector[char] + 1
-		if getWordFromVector(child) not in exploredSet and isVectorValid(child):
-			if depthLimitedSearch(child, endVector, limit - 1):
-				ladder.append(currentVector)
-				return True
-		#remove char
-		child[char] = currentVector[char] - 1
-		if getWordFromVector(child) not in exploredSet and isVectorValid(child):
-			if depthLimitedSearch(child, endVector, limit - 1):
-				ladder.append(currentVector)
-				return True
+		diffLength = getVectorLength(getVectorDifference(currentVector, endVector))
+		if(diffLength <= 0):
+			#add char
+			child[char] = currentVector[char] + 1
+			if getWordFromVector(child) not in exploredSet and isVectorValid(child):
+				if depthLimitedSearch(child, endVector, limit - 1):
+					ladder.append(currentVector)
+					return True
+			#remove char
+			child[char] = currentVector[char] - 1
+			if getWordFromVector(child) not in exploredSet and isVectorValid(child):
+				if depthLimitedSearch(child, endVector, limit - 1):
+					ladder.append(currentVector)
+					return True
+		if(diffLength > 0):
+			#remove char
+			child[char] = currentVector[char] - 1
+			if getWordFromVector(child) not in exploredSet and isVectorValid(child):
+				if depthLimitedSearch(child, endVector, limit - 1):
+					ladder.append(currentVector)
+					return True
+			#add char
+			child[char] = currentVector[char] + 1
+			if getWordFromVector(child) not in exploredSet and isVectorValid(child):
+				if depthLimitedSearch(child, endVector, limit - 1):
+					ladder.append(currentVector)
+					return True
 
 	return False
 
