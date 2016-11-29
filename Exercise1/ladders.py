@@ -106,13 +106,17 @@ def climbLadderSmart(currentVector, endVector):
 
 def iterativeDeepeningSearch(startVector, endVector, startDepth):
 	depth = startDepth
-	while depth < len(sortedSet):
+	numExploredNodesPrev = len(exploredSet)
+	moreNodesExplored = True
+	while moreNodesExplored: #make sure more nodes have been explored than last iteration
 		print("searching to depth " + str(depth))
 		exploredSet.clear()
 		if depthLimitedSearch(startVector, endVector, depth):
 			return True
 		else:
 			depth += 1
+		moreNodesExplored = (numExploredNodesPrev < len(exploredSet))
+		numExploredNodesPrev = len(exploredSet)
 	return False
 
 
@@ -131,7 +135,8 @@ def depthLimitedSearch(currentVector, endVector, limit):
 	for char in range(len(currentVector)):
 		child = list(currentVector)
 		diffLength = getVectorLength(getVectorDifference(currentVector, endVector))
-		if(diffLength <= 0):
+		#try to get to words with similar length first
+		if diffLength <= 0:
 			#add char
 			child[char] = currentVector[char] + 1
 			if getWordFromVector(child) not in exploredSet and isVectorValid(child):
@@ -140,17 +145,19 @@ def depthLimitedSearch(currentVector, endVector, limit):
 					return True
 			#remove char
 			child[char] = currentVector[char] - 1
-			if getWordFromVector(child) not in exploredSet and isVectorValid(child):
-				if depthLimitedSearch(child, endVector, limit - 1):
-					ladder.append(currentVector)
-					return True
-		if(diffLength > 0):
+			if child[char] > 0: #no negative charCounts
+				if getWordFromVector(child) not in exploredSet and isVectorValid(child):
+					if depthLimitedSearch(child, endVector, limit - 1):
+						ladder.append(currentVector)
+						return True
+		if diffLength > 0:
 			#remove char
 			child[char] = currentVector[char] - 1
-			if getWordFromVector(child) not in exploredSet and isVectorValid(child):
-				if depthLimitedSearch(child, endVector, limit - 1):
-					ladder.append(currentVector)
-					return True
+			if child[char] > 0: #no negative charCounts
+				if getWordFromVector(child) not in exploredSet and isVectorValid(child):
+					if depthLimitedSearch(child, endVector, limit - 1):
+						ladder.append(currentVector)
+						return True
 			#add char
 			child[char] = currentVector[char] + 1
 			if getWordFromVector(child) not in exploredSet and isVectorValid(child):
@@ -206,36 +213,12 @@ def main():
 		wordLadder = getWordLadder(startWord, endWord)
 		print(str(wordLadder))
 		ladder.clear()
+
 	file = open("output.txt", "w")
 	for word in wordLadder:
 		file.write(word + "\n")
 	file.close()
-	print("")
 
-	'''
-	startWord = "croissant"; endWord = "baritone"
-	if doLadder(startWord, endWord):
-		print(str(getWordLadder(startWord, endWord)))
-		ladder.clear()
 	print("")
-
-	startWord = "crumpet"; endWord = "treacle"
-	if doLadder(startWord, endWord):
-		print(str(getWordLadder(startWord, endWord)))
-		ladder.clear()
-	print("")
-
-	startWord = "apple"; endWord = "pear"
-	if doLadder(startWord, endWord):
-		print(str(getWordLadder(startWord, endWord)))
-		ladder.clear()
-	print("")
-
-	startWord = "lead"; endWord = "gold"
-	if doLadder(startWord, endWord):
-		print(str(getWordLadder(startWord, endWord)))
-		ladder.clear()
-	print("")
-	'''
 
 main()
